@@ -96,7 +96,7 @@ jobs:
           sudo dpkg -i session-manager-plugin.deb
           sudo apt install -y unzip wget
           python -m pip install --upgrade pip
-          pip install boto3 botocore
+          /opt/pipx/venvs/ansible-core/bin/pip install boto3 botocore
           ansible-galaxy collection install amazon.aws
        
       - name: Create dynamic inventory file
