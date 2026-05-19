@@ -1,0 +1,11 @@
+---
+- name: Change TimeZone to Asia/Kolkata
+  hosts: all
+  become: true
+  gather_facts: false
+
+
+  tasks:
+    - name: Set system timezone
+      ansible.builtin.timezone:
+        name: Asia/Kolkata

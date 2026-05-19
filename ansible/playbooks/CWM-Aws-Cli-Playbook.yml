@@ -1,0 +1,40 @@
+---
+- name: Install AWS CLi
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Update on Ubuntu/Debian
+      ansible.builtin.apt:
+        update_cache: yes
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Install unzip on Ubuntu/Debian
+      ansible.builtin.apt:
+        name:
+          - unzip
+        state: present
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Update on Amazon Linux or RedHat family
+      ansible.builtin.yum:
+        name: "*"
+        state: latest
+      when: ansible_facts['os_family'] in ["RedHat", "Amazon"]
+
+    - name: Install unzip on Amazon Linux or RedHat family
+      ansible.builtin.yum:
+        name:
+          - unzip
+        state: present
+      when: ansible_facts['os_family'] in ["RedHat", "Amazon"]
+    
+    - name: Downloading a file and Unarchive a file
+      ansible.builtin.unarchive:
+        src: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+        dest: /tmp
+        remote_src: yes
+
+    - name: Installing Aws CLI
+      ansible.builtin.command: /tmp/aws/install

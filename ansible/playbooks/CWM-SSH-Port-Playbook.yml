@@ -1,0 +1,60 @@
+---
+- name: SSH Port Change
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars:
+    new_ssh_port: 2223
+
+  tasks:
+
+    - name: Ensure /run/sshd directory exists
+      ansible.builtin.file:
+        path: /run/sshd
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Ensure new SSH port is set
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?Port '
+        line: "Port {{ new_ssh_port }}"
+        validate: '/usr/sbin/sshd -t -f %s'
+
+    - name: Add SELinux rule for SSH port (RedHat only)
+      community.general.seport:
+        ports: "{{ new_ssh_port }}"
+        proto: tcp
+        setype: ssh_port_t
+        state: present
+      when: ansible_facts['os_family'] == "RedHat"
+      ignore_errors: true
+
+    - name: Allow new SSH port in UFW (Debian)
+      community.general.ufw:
+        rule: allow
+        port: "{{ new_ssh_port }}"
+        proto: tcp
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Restart ssh service on Debian
+      ansible.builtin.systemd:
+        name: ssh
+        state: restarted
+        daemon_reload: true
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Restart sshd service on Amazon Linux / RedHat
+      ansible.builtin.systemd:
+        name: sshd
+        state: restarted
+        daemon_reload: true
+      when: ansible_facts['os_family'] in ["RedHat", "Amazon"]
+
+    - name: Disable UFW on Debian (optional - if you really want)
+      community.general.ufw:
+        state: disabled
+      when: ansible_facts['os_family'] == "Debian"
