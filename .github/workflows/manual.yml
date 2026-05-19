@@ -1,0 +1,82 @@
+---
+name: Terraform Github Action Workflow
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  Ansible:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code from Github Repository
+        uses: actions/checkout@v6
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.1.0
+        with: 
+          aws-region: ap-south-1
+          role-to-assume: arn:aws:iam::388458311239:role/github-action-role
+      
+      - name: Install Ansible and collections
+        run: |
+          sudo apt update -y
+          sudo apt install -y software-properties-common
+          curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
+          sudo dpkg -i session-manager-plugin.deb
+          pipx inject ansible-core boto3 botocore
+       
+      - name: Create dynamic inventory file
+        run: |
+          cat <<EOF > inventory.aws_ec2.yml
+          ---
+          plugin: amazon.aws.aws_ec2
+
+          regions: ap-south-1
+
+          filters:
+            "tag:Ansible-Automation": "Yes"
+            instance-state-name: running
+
+          hostnames:
+            - instance-id
+
+          compose:
+            ansible_connection: '"aws_ssm"'
+            ansible_aws_ssm_bucket_name: '"ansible-s3-bucket-123"'
+            ansible_aws_ssm_region: '"ap-south-1"'
+          EOF
+
+      - name: Create ansible.cfg
+        run: |
+          cat <<EOF > ansible.cfg
+          [defaults]
+          inventory = inventory.aws_ec2.yml
+          host_key_checking = False
+          gather_facts = False
+          forks = 5
+          ansible_python_interpreter=/usr/bin/python3
+          deprecation_warnings = False
+
+          [privilege_escalation]
+          become = True
+          become_method = sudo
+          become_user = root
+          become_ask_pass = False
+          EOF
+
+      - name: Verify inventory
+        run: |
+          ansible-inventory --graph
+
+      - name: Ansible Ping Test
+        run: ansible -m ping all
+        env:
+          ANSIBLE_PYTHON_INTERPRETER: auto_silent
+      
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook ./ansible/main-playbook.yml -v
