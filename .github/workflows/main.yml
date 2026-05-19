@@ -91,7 +91,7 @@ jobs:
         run: |
           sudo apt update -y
           sudo apt install -y software-properties-common
-          sudo apt install -y ansible python3 python3-boto3
+          sudo apt install -y python3-boto3
           curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
           sudo dpkg -i session-manager-plugin.deb
           ansible-galaxy collection install amazon.aws
@@ -125,7 +125,6 @@ jobs:
           host_key_checking = False
           gather_facts = False
           forks = 5
-          interpreter_python = /usr/bin/python3
           deprecation_warnings = False
 
           [privilege_escalation]
