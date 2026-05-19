@@ -96,8 +96,6 @@ jobs:
           sudo dpkg -i session-manager-plugin.deb
           sudo apt install -y unzip wget
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip -o awscliv2.zip
-          ./aws/install
        
       - name: Create dynamic inventory file
         run: |
