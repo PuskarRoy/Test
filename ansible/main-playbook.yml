@@ -1,0 +1,1 @@
+- import_playbook: ./playbooks/CWM-Aws-Cli-Playbook.yml

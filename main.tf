@@ -23,7 +23,7 @@ module "my-vpc" {
 
 module "ubuntu" {
   source            = "./module/ec2"
-  ami               = "ami-07a00cf47dbbc844c"
+  ami               = "ami-0388e3ada3d9812da"
   instance_profile  = "ec2-admin"
   key_pair_name     = module.ec2_key_pair.key_pair_name
   kms_key_id        = module.my-kms.arn
