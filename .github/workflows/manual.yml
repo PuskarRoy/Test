@@ -1,5 +1,5 @@
 ---
-name: Terraform Github Action Workflow
+name: Ansible Github Action Workflow
 
 on:
   workflow_dispatch:
