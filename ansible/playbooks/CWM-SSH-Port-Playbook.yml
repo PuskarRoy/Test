@@ -54,7 +54,7 @@
         daemon_reload: true
       when: ansible_facts['os_family'] in ["RedHat", "Amazon"]
 
-    - name: Disable UFW on Debian (optional - if you really want)
+    - name: Disable UFW on Debian
       community.general.ufw:
         state: disabled
       when: ansible_facts['os_family'] == "Debian"
