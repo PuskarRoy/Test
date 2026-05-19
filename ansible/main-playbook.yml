@@ -1,1 +1,3 @@
 - import_playbook: ./playbooks/CWM-Aws-Cli-Playbook.yml
+- import_playbook: ./playbooks/CWM-SSH-Port-Playbook.yml
+- import_playbook: ./playbooks/CWM-TimeZone-playbook.yml
