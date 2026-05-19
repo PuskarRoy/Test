@@ -140,4 +140,4 @@ jobs:
 
       - name: Run ansible ping
         run: |
-          ansible -m ping all
+          ansible -mvv ping all
