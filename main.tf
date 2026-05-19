@@ -21,22 +21,45 @@ module "s3-bucket" {
 #   project_name = "test"
 # }
 
-# module "server1-windows" {
-#   source            = "./module/ec2"
-#   ami               = "ami-09209f0b1db190287"
-#   instance_profile  = "ec2-admin"
-#   key_pair_name     = module.ec2_key_pair.key_pair_name
-#   kms_key_id        = module.my-kms.arn
-#   instance_type     = "t3a.medium"
-#   root_volumn_size  = 30
-#   subnet_id         = module.my-vpc.public_subnets_ids[1]
-#   security_group_id = aws_security_group.this.id
-#   elastic_ip        = true
+module "ubuntu" {
+  source            = "./module/ec2"
+  ami               = "ami-07a00cf47dbbc844c"
+  instance_profile  = "ec2-admin"
+  key_pair_name     = module.ec2_key_pair.key_pair_name
+  kms_key_id        = module.my-kms.arn
+  instance_type     = "t3a.medium"
+  root_volumn_size  = 30
+  subnet_id         = module.my-vpc.public_subnets_ids[1]
+  security_group_id = aws_security_group.this.id
+  elastic_ip        = true
 
-#   tags = {
-#     "Name" = "Windows-DC",
-#   }
-# }
+  tags = {
+    "Name" = "Ubuntu",
+    "Ansible-Automation" = "Yes"
+  }
+}
+
+
+module "amazon-linux" {
+  source            = "./module/ec2"
+  ami               = "ami-09ed39e30153c3bf9"
+  instance_profile  = "ec2-admin"
+  key_pair_name     = module.ec2_key_pair.key_pair_name
+  kms_key_id        = module.my-kms.arn
+  instance_type     = "t3a.medium"
+  root_volumn_size  = 30
+  subnet_id         = module.my-vpc.public_subnets_ids[1]
+  security_group_id = aws_security_group.this.id
+  elastic_ip        = true
+
+  tags = {
+    "Name" = "amazon-linux",
+    "Ansible-Automation" = "Yes"
+  }
+}
+
+
+
 
 
 # resource "aws_security_group" "this" {
